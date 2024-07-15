@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: suite-app
+  name: app-postgre-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-postgres
+  template:
+    metadata:
+      labels:
+        app: app-postgres
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: app-postgres
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          image: postgres:alpine3.19
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: postgresvol
+          envFrom:
+            - configMapRef:
+                name: app-postgre-configmap
+          ports:
+            - containerPort: 5432
+      volumes:
+        - name: postgresvol
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+            
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-postgre-service
+  namespace: suite-app
+  labels:
+    app: app-postgres
+spec:
+  selector:
+    app: app-postgres
+  ports:
+    - port: 5432
