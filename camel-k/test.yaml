@@ -1,0 +1,21 @@
+apiVersion: camel.apache.org/v1
+kind: Integration
+metadata:
+  annotations:
+    camel.apache.org/operator.id: camel-k
+  creationTimestamp: null
+  name: test
+spec:
+  flows:
+  - from:
+      parameters:
+        period: "1000"
+      steps:
+      - setBody:
+          constant: Hello Camel from yaml
+      - log: ${body}
+      uri: timer:yaml
+  traits:
+    prometheus:
+      enabled: true
+status: {}

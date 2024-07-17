@@ -1,0 +1,6 @@
+- from:
+   uri: "direct:greeting-api"
+   steps:
+    - to: "log:api?showAll=true&multiline=true"
+    - setBody:
+       simple: "Hello from ${headers.name}"
